@@ -1,10 +1,12 @@
+import { Image } from 'antd';
 import * as React from 'react';
 
 interface ITemplateOutsourceProps {
   fullName: string | undefined;
+  images: string | null;
 }
 
-const TemplateOutsource: React.FunctionComponent<ITemplateOutsourceProps> = ({ fullName }) => {
+const TemplateOutsource: React.FunctionComponent<ITemplateOutsourceProps> = ({ fullName, images }) => {
   return (
     <div className='flex flex-row space-x-4'>
       {/* front card */}
@@ -18,9 +20,20 @@ const TemplateOutsource: React.FunctionComponent<ITemplateOutsourceProps> = ({ f
 
           <div className="bg-white h-3/5 w-full items-center rounded-t-4xl rounded-b-xl">
             <div className='flex items-center justify-center h-fit -mt-16'>
-              <div className='h-40 w-40 bg-gray-400 border-2 border-white rounded-full flex items-center justify-center bg-center'>
+
+              {images ? (
+                <Image
+                  preview={false}
+                  src={images}
+                  alt="Preview"
+                  width={160}
+                  height={160}
+                  className='rounded-full'
+                />
+              ) : (<div className='h-40 w-40 bg-gray-400 border-2 border-white rounded-full flex items-center justify-center bg-center'>
                 asdasdas
-              </div>
+              </div>)}
+
             </div>
             <div className="flex flex-col space-y-1 p-3">
               <div className="w-full font-bold text-xl leading-none capitalize text-center">
