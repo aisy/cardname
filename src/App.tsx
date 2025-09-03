@@ -7,10 +7,7 @@ const App: React.FunctionComponent = () => {
 
   const [fullName, setFullName] = React.useState<string>()
   const [typeKaryawan, setTypeKaryawan] = React.useState<string>('internal')
-
-  React.useEffect(() => {
-
-  }, [fullName, typeKaryawan])
+  const [previewUrl, setPreviewUrl] = React.useState<string | null>(null);
 
   const onchangeName = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFullName(e.target.value)
@@ -19,6 +16,24 @@ const App: React.FunctionComponent = () => {
   const onChangeTypeKaryawan = (e: RadioChangeEvent) => {
     console.log(e.target.value);
     setTypeKaryawan(e.target.value)
+  }
+
+  const handleBeforeUpload = (file: File) => {
+    const objectURL = URL.createObjectURL(file)
+    setPreviewUrl(objectURL)
+    return false
+  }
+
+  const printCard = () => {
+    const printContents = document.getElementById("print-area")?.innerHTML;
+    const originalContents = document.body.innerHTML;
+
+    if (printContents) {
+      document.body.innerHTML = printContents;
+      window.print();
+      document.body.innerHTML = originalContents;
+    }
+
   }
 
   return (
@@ -37,13 +52,17 @@ const App: React.FunctionComponent = () => {
           <div className="w-1/2 rounded-2xl border border-gray-500/20 p-5">
             <div className="font-bold mb-5">Data Karyawan</div>
             <div>
-              <Form layout="vertical">
+              <Form
+                layout="vertical"
+                initialValues={{
+                  tipe_karyawan: typeKaryawan,
+                }}
+              >
                 <Form.Item name={'tipe_karyawan'} label="Tipe Karyawan">
                   <Radio.Group
                     block
                     optionType="button"
                     buttonStyle="solid"
-                    defaultValue={typeKaryawan}
                     options={[
                       { label: 'Internal', value: 'internal' },
                       { label: 'Outsource', value: 'outsource' }
@@ -59,12 +78,7 @@ const App: React.FunctionComponent = () => {
                     accept="image/*"
                     showUploadList={false}
                     maxCount={1}
-                    beforeUpload={
-                      (file) => {
-                        console.log(file)
-                        return false
-                      }
-                    }
+                    beforeUpload={handleBeforeUpload}
                   >
                     <Button>Click to Upload</Button>
                   </Upload>
@@ -74,13 +88,18 @@ const App: React.FunctionComponent = () => {
           </div>
           <div className="w-1/2 rounded-2xl border border-gray-500/20 p-5">
             <div className="font-bold mb-5">Hasil</div>
-            {
-              typeKaryawan === 'internal' ?
-                <TemplateInternal fullName={fullName} />
-                : <TemplateOutsource fullName={fullName} />
-            }
+
+            <div id="print-area" className="print:block">
+              {
+                typeKaryawan === 'internal' ?
+                  <TemplateInternal fullName={fullName} images={previewUrl} />
+                  : <TemplateOutsource fullName={fullName} images={previewUrl} />
+              }
+            </div>
           </div>
         </div>
+
+        <Button onClick={printCard}>Cetak Kartu</Button>
       </div>
     </>
   )
